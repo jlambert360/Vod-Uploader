@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -111,6 +111,7 @@ namespace VodUploader
       video.Snippet = new VideoSnippet();
             
 
+
             XmlDocument doc = new XmlDocument();
             doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
             XmlNodeList player1 = doc.GetElementsByTagName("player1");
@@ -121,7 +122,6 @@ namespace VodUploader
                 video.Snippet.Title = (player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
                 Console.WriteLine("Video title is " + player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
             }
-            //video.Snippet.Thumbnails.Equals("D:/Users/Jordan/Desktop/AON/Boiko v SunTsu.jpg");
 
             //video.Snippet.Title = VidTitle;
       video.Snippet.Description = "Default Video Description";
