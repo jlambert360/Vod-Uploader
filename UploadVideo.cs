@@ -26,6 +26,7 @@ namespace VodUploader
         //string path = File.ReadLines("Path.txt").First();
         string desktoppath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         string realFile = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").First();
+        public static string GameInfo = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").Last();
         public static string FileName;
         //public static string VidTitle;
         public static string GameType;
@@ -116,7 +117,8 @@ namespace VodUploader
 
             //Loads the output for Scoreboard Assistant and makes a title out of Player1 vs. Player2 and the match type
             XmlDocument doc = new XmlDocument();
-            doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
+            doc.Load(GameInfo);
+            //doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
             XmlNodeList player1 = doc.GetElementsByTagName("player1");
             XmlNodeList player2 = doc.GetElementsByTagName("player2");
             XmlNodeList match = doc.GetElementsByTagName("match");
@@ -159,7 +161,7 @@ namespace VodUploader
             //20 is youtube gaming in U.S.
             video.Snippet.CategoryId = "20"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
             video.Status = new VideoStatus();
-            video.Status.PrivacyStatus = "private"; //Should be either "private" or "public" or "unlisted"
+            video.Status.PrivacyStatus = "unlisted"; //Should be either "private" or "public" or "unlisted"
             //string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             //string path = File.ReadLines("MyFile.txt").First();
             //var filePath = desktoppath+"/Replay/Replay.mp4"; // Replace with path to actual movie file.
