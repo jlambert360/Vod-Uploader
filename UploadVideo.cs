@@ -135,15 +135,15 @@ namespace VodUploader
             video.Snippet.Description = "AON Gaming is a tournament store. We have all kinds of video game tournaments throughout the entire week. We offer the highest calibur of professional gaming tournaments across all of Long Island!\nSunday - Melee\nTuesday - Training Tuesdays\nThursday - Melee\nFriday - Smash 4\nSaturday - PM";
             
             //Sets the tags for the video
-            if (GameType == "Project M")
+            if (GameType == "Project M" || GameType == "project m" || GameType == "PM" || GameType == "pm")
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + PM_KEYWORDS };
             }
-            else if (GameType == "Melee")
+            else if (GameType == "Melee" || GameType == "melee")
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + MELEE_KEYWORDS };
             }
-            else if (GameType == "Smash 4")
+            else if (GameType == "Smash 4" || GameType == "smash 4")
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + SMASH4_KEYWORDS };
             }
@@ -157,8 +157,7 @@ namespace VodUploader
                 System.Threading.Thread.Sleep(3000);
                 Environment.Exit(0);
             }
-
-
+            
             //20 is youtube gaming in U.S.
             video.Snippet.CategoryId = "20"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
             video.Status = new VideoStatus();
@@ -179,8 +178,7 @@ namespace VodUploader
                 await videosInsertRequest.UploadAsync();
             }
         }
-
-
+        
         //Ignore these! Change nothing here!
         void videosInsertRequest_ProgressChanged(Google.Apis.Upload.IUploadProgress progress)
         {
