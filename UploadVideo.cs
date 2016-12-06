@@ -59,7 +59,8 @@ namespace VodUploader
             {
                 Console.WriteLine("Path " + Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\VodUploader\\Path.txt does not exist! Please edit Path.txt to continue!");
 
-                //File.Create(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt");
+                File.Create(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt");
+                System.Threading.Thread.Sleep(3000);
                 File.AppendAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt", $"Please type the path of your vod folder here. EX: C:/Users/YOURNAME/Desktop/VODS/");
                 System.Threading.Thread.Sleep(60000);
                 Environment.Exit(0);
@@ -132,7 +133,7 @@ namespace VodUploader
 
             //Sets the description for the video
             video.Snippet.Description = "AON Gaming is a tournament store. We have all kinds of video game tournaments throughout the entire week. We offer the highest calibur of professional gaming tournaments across all of Long Island!\nSunday - Melee\nTuesday - Training Tuesdays\nThursday - Melee\nFriday - Smash 4\nSaturday - PM";
-
+            
             //Sets the tags for the video
             if (GameType == "Project M")
             {
