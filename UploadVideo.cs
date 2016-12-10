@@ -13,6 +13,7 @@ using Google.Apis.YouTube.v3.Data;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace VodUploader
 {
@@ -24,12 +25,18 @@ namespace VodUploader
     internal class UploadVideo
     {
         //string path = File.ReadLines("Path.txt").First();
-        string desktoppath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        string realFile = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").First();
-        public static string GameInfo = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").Last();
         public static string FileName;
+        static string desktoppath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        static string pathA = desktoppath + ("/VodUploader/" + "Path.txt");
+        static string realFile = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").First();
+        static string pathB = Convert.ToString(File.ReadLines(pathA));
+        string dubsPath = File.ReadLines(pathA).Skip(1).Take(2).First();
+        public static string GameInfo = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").Last();
+
+
         //public static string VidTitle;
         public static string GameType;
+        public static string matchType;
         public static string PM_KEYWORDS = "\"PM\", \"Project M\", \"SSBPM\", \"Wii\"";
         public static string MELEE_KEYWORDS = "\"Melee\", \"SSBM\", \"Gamecube\"";
         public static string SMASH4_KEYWORDS = "\"Smash4\", \"Sm4sh\", \"Smash4WiiU\", \"Smash 4 Wii U\", \"SSB4\", \"Wii U\", \"S4\"";
@@ -37,10 +44,28 @@ namespace VodUploader
         public static string SMASH_KEYWORDS = "\"Smash\", \"Smash Bros\", \"Super Smash Bros\", \"SmashBros\", \"SuperSmashBros\"";
         public static string AON_KEYWORDS = "\"AON\", \"AON Gaming\", \"AON Smash\", \"Long Island\", \"Shady Penguin\", \"AON Long Island\", \"AON Gaming Long Island\", \"esports\"";
 
+        static readonly string[] SizeSuffixes =
+                  { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+        static string SizeSuffix(Int64 value)
+        {
+            if (value < 0) { return "-" + SizeSuffix(-value); }
+
+            int i = 0;
+            decimal dValue = (decimal)value;
+            while (Math.Round(dValue / 1024) >= 1)
+            {
+                dValue /= 1024;
+                i++;
+            }
+
+            return string.Format("{0:n1} {1}", dValue, SizeSuffixes[i]);
+        }
 
         [STAThread]
         static void Main(string[] args)
         {
+
             /* Gets player names and match type from Scoreboard Assistant 
             XmlDocument doc = new XmlDocument();
             doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
@@ -52,7 +77,7 @@ namespace VodUploader
                 Console.WriteLine(player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
             }
             */
-
+            //Console.WriteLine(pathB);
             Console.WriteLine("~~~AON Vod Uploader by Bird~~~");
             Console.WriteLine("==============================");
             if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt"))
@@ -68,10 +93,14 @@ namespace VodUploader
             //Asking information about the video
             Console.WriteLine("Enter the FULL name of the file you want to upload. EX: VOD.mp4");
             FileName = Console.ReadLine();
+
             //Console.WriteLine("Please enter a video title");
             //VidTitle = Console.ReadLine();
             Console.WriteLine("Is the game Melee, Smash 4, or Project M?");
             GameType = Console.ReadLine();
+
+            Console.WriteLine("Is the match Doubles or Singles?");
+            matchType = Console.ReadLine();
 
             try
             {
@@ -115,25 +144,45 @@ namespace VodUploader
             var video = new Video();
             video.Snippet = new VideoSnippet();
 
-
             //Loads the output for Scoreboard Assistant and makes a title out of Player1 vs. Player2 and the match type
-            XmlDocument doc = new XmlDocument();
-            doc.Load(GameInfo);
-            //doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
-            XmlNodeList player1 = doc.GetElementsByTagName("player1");
-            XmlNodeList player2 = doc.GetElementsByTagName("player2");
-            XmlNodeList match = doc.GetElementsByTagName("match");
-            for (int i = 0; i < player1.Count; i++)
+            if (matchType == "Singles" || matchType == "singles" || matchType == "s")
             {
-                video.Snippet.Title = (player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
-                Console.WriteLine("Video title is " + player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
+                XmlDocument doc = new XmlDocument();
+                doc.Load(GameInfo);
+                //doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
+                XmlNodeList player1 = doc.GetElementsByTagName("player1");
+                XmlNodeList player2 = doc.GetElementsByTagName("player2");
+                XmlNodeList match = doc.GetElementsByTagName("match");
+                for (int i = 0; i < player1.Count; i++)
+                {
+                    video.Snippet.Title = (player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
+                    Console.WriteLine("Video title is " + player1[i].InnerXml + " vs. " + player2[i].InnerXml + " " + match[i].InnerXml);
+                }
             }
+            else if (matchType == "Doubles" || matchType == "doubles" || matchType == "d")
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(dubsPath);
+                //doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/playertest.xml");
+                XmlNodeList player1 = doc.GetElementsByTagName("player1");
+                XmlNodeList player2 = doc.GetElementsByTagName("player2");
+                XmlNodeList player3 = doc.GetElementsByTagName("player3");
+                XmlNodeList player4 = doc.GetElementsByTagName("player4");
+                XmlNodeList match = doc.GetElementsByTagName("match");
+                for (int i = 0; i < player1.Count; i++)
+                {
+                    video.Snippet.Title = (player1[i].InnerXml + player2[i].InnerXml + " vs. " + player3[i].InnerXml + " " + player4[i].InnerXml + " " + match[i].InnerXml);
+                    Console.WriteLine("Video title is " + player1[i].InnerXml + " and " + player2[i].InnerXml + " vs. " + player3[i].InnerXml + " and " + player4[i].InnerXml + " " + match[i].InnerXml);
+                }
+            }
+
+
 
             //video.Snippet.Title = VidTitle;
 
             //Sets the description for the video
             video.Snippet.Description = "AON Gaming is a tournament store. We have all kinds of video game tournaments throughout the entire week. We offer the highest calibur of professional gaming tournaments across all of Long Island!\nSunday - Melee\nTuesday - Training Tuesdays\nThursday - Melee\nFriday - Smash 4\nSaturday - PM";
-            
+
             //Sets the tags for the video
             if (GameType == "Project M" || GameType == "project m" || GameType == "PM" || GameType == "pm")
             {
@@ -157,7 +206,7 @@ namespace VodUploader
                 System.Threading.Thread.Sleep(3000);
                 Environment.Exit(0);
             }
-            
+
             //20 is youtube gaming in U.S.
             video.Snippet.CategoryId = "20"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
             video.Status = new VideoStatus();
@@ -168,7 +217,6 @@ namespace VodUploader
 
             //Finds the location of the video to upload
             var filePath = realFile + FileName;
-
             using (var fileStream = new FileStream(filePath, FileMode.Open))
             {
                 var videosInsertRequest = youtubeService.Videos.Insert(video, "snippet,status", fileStream, "video/*");
@@ -178,14 +226,17 @@ namespace VodUploader
                 await videosInsertRequest.UploadAsync();
             }
         }
-        
+
+
         //Ignore these! Change nothing here!
         void videosInsertRequest_ProgressChanged(Google.Apis.Upload.IUploadProgress progress)
         {
             switch (progress.Status)
             {
                 case UploadStatus.Uploading:
-                    Console.WriteLine("{0} bytes sent.", progress.BytesSent);
+                    FileInfo f = new FileInfo(realFile + FileName);
+                    long filePathA = (f.Length);
+                    Console.WriteLine("{0} bytes sent out of {1}.", SizeSuffix(progress.BytesSent), SizeSuffix(filePathA));
                     break;
 
                 case UploadStatus.Failed:
