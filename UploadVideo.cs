@@ -14,6 +14,8 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace VodUploader
 {
@@ -22,7 +24,7 @@ namespace VodUploader
     /// Relies on the Google APIs Client Library for .NET, v1.7.0 or higher.
     /// See https://code.google.com/p/google-api-dotnet-client/wiki/GettingStarted
     /// </summary>
-    internal class UploadVideo
+    public class UploadVideo
     {
         //string path = File.ReadLines("Path.txt").First();
         public static string FileName;
@@ -65,7 +67,10 @@ namespace VodUploader
         [STAThread]
         static void Main(string[] args)
         {
-
+            var directory = new DirectoryInfo(realFile);
+            var myFile = directory.GetFiles()
+             .OrderByDescending(q => q.LastWriteTime)
+             .First();
             /* Gets player names and match type from Scoreboard Assistant 
             XmlDocument doc = new XmlDocument();
             doc.Load("D:/Users/Jordan/Downloads/Scoreboard-Assistant-v1.1.5/Scoreboard Assistant/output/versus.xml");
@@ -78,8 +83,10 @@ namespace VodUploader
             }
             */
             //Console.WriteLine(pathB);
+
             Console.WriteLine("~~~AON Vod Uploader by Bird~~~");
             Console.WriteLine("==============================");
+            //Console.WriteLine("Is the file name " + myFile);
             if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt"))
             {
                 Console.WriteLine("Path " + Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\VodUploader\\Path.txt does not exist! Please edit Path.txt to continue!");
@@ -91,8 +98,9 @@ namespace VodUploader
                 Environment.Exit(0);
             }
             //Asking information about the video
-            Console.WriteLine("Enter the FULL name of the file you want to upload. EX: VOD.mp4");
-            FileName = Console.ReadLine();
+            //Console.WriteLine("Enter the FULL name of the file you want to upload. EX: VOD.mp4");
+            //FileName = Console.ReadLine();
+            FileName = Convert.ToString(myFile);
 
             //Console.WriteLine("Please enter a video title");
             //VidTitle = Console.ReadLine();
@@ -171,7 +179,7 @@ namespace VodUploader
                 XmlNodeList match = doc.GetElementsByTagName("match");
                 for (int i = 0; i < player1.Count; i++)
                 {
-                    video.Snippet.Title = (player1[i].InnerXml + player2[i].InnerXml + " vs. " + player3[i].InnerXml + " " + player4[i].InnerXml + " " + match[i].InnerXml);
+                    video.Snippet.Title = (player1[i].InnerXml + " and " + player2[i].InnerXml + " vs. " + player3[i].InnerXml + " and " + player4[i].InnerXml + " " + match[i].InnerXml);
                     Console.WriteLine("Video title is " + player1[i].InnerXml + " and " + player2[i].InnerXml + " vs. " + player3[i].InnerXml + " and " + player4[i].InnerXml + " " + match[i].InnerXml);
                 }
             }
@@ -188,7 +196,7 @@ namespace VodUploader
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + PM_KEYWORDS };
             }
-            else if (GameType == "Melee" || GameType == "melee")
+            else if (GameType == "Melee" || GameType == "melee" || GameType == "m" || GameType == "M")
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + MELEE_KEYWORDS };
             }
@@ -249,5 +257,7 @@ namespace VodUploader
         {
             Console.WriteLine("Video id '{0}' was successfully uploaded.", video.Id);
         }
+        
     }
 }
+
