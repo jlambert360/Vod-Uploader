@@ -16,6 +16,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace VodUploader
 {
@@ -26,15 +27,16 @@ namespace VodUploader
     /// </summary>
     public class UploadVideo
     {
-        //string path = File.ReadLines("Path.txt").First();
+
+        public static readonly string version = "0.03";
         public static string FileName;
         static string desktoppath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         static string pathA = desktoppath + ("/VodUploader/" + "Path.txt");
-        static string realFile = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").First();
+        static string realFile = File.ReadLines((Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt")).First();
         static string pathB = Convert.ToString(File.ReadLines(pathA));
-        string dubsPath = File.ReadLines(pathA).Skip(1).Take(2).First();
-        public static string GameInfo = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").Last();
-
+        string dubsPath = File.ReadLines(pathA).Skip(4).Take(1).First();
+        public static string privacySetting = File.ReadLines(pathA).Skip(1).Take(1).First();
+        public static string GameInfo = File.ReadLines((Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt")).Last(); 
 
         //public static string VidTitle;
         public static string GameType;
@@ -83,7 +85,7 @@ namespace VodUploader
             }
             */
             //Console.WriteLine(pathB);
-
+            Console.Title = "AON Vod Uploader Version " + version;
             Console.WriteLine("~~~AON Vod Uploader by Bird~~~");
             Console.WriteLine("==============================");
             //Console.WriteLine("Is the file name " + myFile);
@@ -200,7 +202,7 @@ namespace VodUploader
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + MELEE_KEYWORDS };
             }
-            else if (GameType == "Smash 4" || GameType == "smash 4")
+            else if (GameType == "Smash 4" || GameType == "smash 4" || GameType == "Sm4sh" || GameType == "sm4sh" || GameType == "4")
             {
                 video.Snippet.Tags = new string[] { SMASH_KEYWORDS + "\t" + AON_KEYWORDS + "\t" + SMASH4_KEYWORDS };
             }
@@ -218,7 +220,20 @@ namespace VodUploader
             //20 is youtube gaming in U.S.
             video.Snippet.CategoryId = "20"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
             video.Status = new VideoStatus();
-            video.Status.PrivacyStatus = "unlisted"; //Should be either "private" or "public" or "unlisted"
+
+            if(privacySetting == Convert.ToString(1))
+            {
+                Console.WriteLine("Video uploading as Public");
+                video.Status.PrivacyStatus = "public";
+            }
+            else if (privacySetting == Convert.ToString(2))
+            {
+                Console.WriteLine("Video uploading as Unlisted");
+                video.Status.PrivacyStatus = "unlisted";
+            }
+
+            //video.Status.PrivacyStatus = privacySetting;
+            //video.Status.PrivacyStatus = "public"; //Should be either "private" or "public" or "unlisted"
             //string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             //string path = File.ReadLines("MyFile.txt").First();
             //var filePath = desktoppath+"/Replay/Replay.mp4"; // Replace with path to actual movie file.
@@ -256,6 +271,8 @@ namespace VodUploader
         void videosInsertRequest_ResponseReceived(Video video)
         {
             Console.WriteLine("Video id '{0}' was successfully uploaded.", video.Id);
+            //ProcessStartInfo procStartInfo = new ProcessStartInfo("cmd.exe", "Video id is " + video.Id);
+            
         }
         
     }
