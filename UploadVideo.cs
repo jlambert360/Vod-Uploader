@@ -28,7 +28,7 @@ namespace VodUploader
     public class UploadVideo
     {
 
-        public static readonly string version = "0.03";
+        public static readonly string version = "0.1";
         public static string FileName;
         static string desktoppath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         static string pathA = desktoppath + ("/VodUploader/" + "Path.txt");
@@ -277,4 +277,3 @@ namespace VodUploader
         
     }
 }
-
