@@ -28,22 +28,50 @@ namespace FileRegister
 
             return string.Format("{0:n1} {1}", dValue, SizeSuffixes[i]);
         }
-
-
-        public static readonly string version = "0.03";
+        
+        public static readonly string version = "0.1";
         static string desktoppath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         static string pathA = desktoppath + ("/VodUploader/" + "Path.txt");
         static string VodFolder = File.ReadLines(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/VodUploader/" + "Path.txt").First();
-        static string UploadPath = File.ReadLines(pathA).Skip(2).Take(1).First(); 
-        static string FileRegisterPath = File.ReadLines(pathA).Skip(3).Take(1).First();
+        static string pmPath = File.ReadLines(pathA).Skip(2).Take(1).First();
+        static string mPath = File.ReadLines(pathA).Skip(3).Take(1).First();
+        static string s4Path = File.ReadLines(pathA).Skip(4).Take(1).First();
+        static string FileRegisterPath = File.ReadLines(pathA).Skip(5).Take(1).First();
+        static string FileRegisterPathPM = File.ReadLines(pathA).Skip(5).Take(1).First();
+        static string FileRegisterPathM = File.ReadLines(pathA).Skip(6).Take(1).First();
+        static string FileRegisterPathS4 = File.ReadLines(pathA).Skip(7).Take(1).First();
+
+        public static string Game;
 
         [STAThread]
         static void Main(string[] args)
         {
-            Console.Title = "AON Vod Uploader Version " + version;
-            Console.WriteLine("~~~AON Vod Uploader by Bird~~~");
+            Console.Title = "Vod Uploader Version " + version;
+            Console.WriteLine("~~~Vod Uploader by Bird~~~");
             Console.WriteLine("==============================");
             UpdateCheck.isUpdateAvailable();
+            Console.WriteLine("Are you uploading for Project M, Melee, or Smash 4? (Can be entered as pm, m, s4)");
+            Game = Console.ReadLine();
+            
+            if(Game == "m" || Game == "Melee")
+            {
+                Console.WriteLine("You are uploading Melee Vods!");
+            }
+            else if (Game == "pm" || Game == "Project M")
+            {
+                Console.WriteLine("You are uploading PM Vods!");
+            }
+            else if (Game == "s4" || Game == "Smash 4")
+            {
+                Console.WriteLine("You are uploading Smash 4 Vods!");
+            }
+            else
+            {
+                Console.WriteLine("Error: Invalid Option. Shutting down.");
+                System.Threading.Thread.Sleep(5000);
+                Environment.Exit(0);
+            }
+
             FileSystemWatcher listener;
             listener = new FileSystemWatcher(VodFolder);
             listener.Created += new FileSystemEventHandler(listener_Created);
@@ -127,7 +155,6 @@ namespace FileRegister
                 Console.WriteLine("File size is: " + SizeSuffix(f.Length));
                 System.Threading.Thread.Sleep(2000);
             
-            //Console.WriteLine("File size is: " + SizeSuffix(f.Length));
         }
 
         public static void AwaitFile()
@@ -153,15 +180,49 @@ namespace FileRegister
             try
             {
 
-                Process RegisterProc = new Process();
-                RegisterProc.StartInfo.FileName = FileRegisterPath;
-                RegisterProc.EnableRaisingEvents = true;
-                RegisterProc.Start();
+                if (Game == "pm" || Game == "Project M")
+                {
+                    Process RegisterProcPM = new Process();
+                    RegisterProcPM.StartInfo.FileName = FileRegisterPathPM;
+                    RegisterProcPM.EnableRaisingEvents = true;
+                    RegisterProcPM.Start();
 
-                Process firstProc = new Process();
-                firstProc.StartInfo.FileName = UploadPath;
-                firstProc.EnableRaisingEvents = true;
-                firstProc.Start();
+                    Process pmProc = new Process();
+                    pmProc.StartInfo.FileName = pmPath;
+                    pmProc.EnableRaisingEvents = true;
+                    pmProc.Start();
+                }
+                else if (Game == "m" || Game == "Melee")
+                {
+                    Process RegisterProcM = new Process();
+                    RegisterProcM.StartInfo.FileName = FileRegisterPathM;
+                    RegisterProcM.EnableRaisingEvents = true;
+                    RegisterProcM.Start();
+
+                    Process mProc = new Process();
+                    mProc.StartInfo.FileName = mPath;
+                    mProc.EnableRaisingEvents = true;
+                    mProc.Start();
+                }
+                else if (Game == "s4" || Game == "Smash 4")
+                {
+                    Process RegisterProcS4 = new Process();
+                    RegisterProcS4.StartInfo.FileName = FileRegisterPathS4;
+                    RegisterProcS4.EnableRaisingEvents = true;
+                    RegisterProcS4.Start();
+
+                    Process s4Proc = new Process();
+                    s4Proc.StartInfo.FileName = s4Path;
+                    s4Proc.EnableRaisingEvents = true;
+                    s4Proc.Start();
+                }
+                else
+                {
+                    Console.WriteLine("Error: Invalid Option. Shutting down.");
+                    System.Threading.Thread.Sleep(5000);
+                    Environment.Exit(0);
+                }
+                
             }
             catch (Exception ex)
             {
